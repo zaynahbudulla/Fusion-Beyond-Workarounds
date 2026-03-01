@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consignment KPI Explorer · Oracle Fusion | Simplit Consulting</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060e18;
+    --surface: #0d1e30;
+    --surface2: #132638;
+    --border: #1e3448;
+    --accent: #2196f3;
+    --gold: #ffb300;
+    --teal: #00bcd4;
+    --green: #4caf50;
+    --red: #ef5350;
+    --text: #e8f1fa;
+    --muted: #6a8aaa;
+    --white: #ffffff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  /* starfield */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.1) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 60%, rgba(255,255,255,0.12) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.08) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.1) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+  /* TOPBAR */
+  .topbar { border-bottom: 1px solid var(--border); padding: 14px 0; }
+  .topbar-inner { display: flex; align-items: center; justify-content: space-between; }
+  .topbar-logo { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: var(--text); text-decoration: none; }
+  .topbar-logo span { color: var(--gold); }
+  .topbar-back { font-size: 0.8rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
+  .topbar-back:hover { color: var(--text); }
+
+  /* HERO */
+  .hero { padding: 70px 0 50px; text-align: center; }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(255,179,0,0.35);
+    padding: 5px 16px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 18px;
+    background: linear-gradient(135deg, var(--text) 0%, #80c8ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub { font-size: 1rem; color: var(--muted); max-width: 560px; margin: 0 auto 40px; line-height: 1.65; }
+
+  /* STATS ROW */
+  .stats { display: flex; gap: 2px; justify-content: center; margin-bottom: 56px; flex-wrap: wrap; }
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 16px 28px;
+    text-align: center;
+    min-width: 140px;
+  }
+  .stat-box:first-child { border-radius: 8px 0 0 8px; }
+  .stat-box:last-child { border-radius: 0 8px 8px 0; }
+  .stat-val { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+
+  /* INDUSTRY SELECTOR */
+  .selector-section { margin-bottom: 48px; }
+  .selector-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 16px; text-align: center; }
+  .industry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .ind-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ind-btn:hover { border-color: var(--accent); background: rgba(33,150,243,0.07); }
+  .ind-btn.active { border-color: var(--accent); background: rgba(33,150,243,0.12); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .ind-btn .ind-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+  .ind-btn .ind-name { font-weight: 600; font-size: 0.85rem; line-height: 1.2; }
+  .ind-btn .ind-sub { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+
+  /* RESULTS */
+  .results-section { display: none; }
+  .results-section.visible { display: block; animation: fadeUp 0.5s ease; }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 28px;
+  }
+  .results-icon { font-size: 36px; }
+  .results-industry { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; }
+  .results-tagline { font-size: 0.85rem; color: var(--muted); margin-top: 3px; }
+
+  /* BUSINESS NEED */
+  .business-need {
+    background: linear-gradient(135deg, rgba(33,150,243,0.1) 0%, rgba(0,188,212,0.05) 100%);
+    border: 1px solid rgba(33,150,243,0.25);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .bn-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+  .bn-title { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 8px; }
+  .bn-text { font-size: 0.9rem; color: #a8c8e8; line-height: 1.6; }
+
+  /* KPI TABLE */
+  .kpi-table-wrap { margin-bottom: 40px; }
+  .kpi-table-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 14px; }
+  .kpi-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .kpi-row:hover { border-color: rgba(33,150,243,0.4); }
+  .kpi-row-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+  }
+  .kpi-name-wrap { display: flex; align-items: center; gap: 12px; }
+  .kpi-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .cat-inv { background: var(--accent); }
+  .cat-fin { background: var(--gold); }
+  .cat-ops { background: var(--teal); }
+  .kpi-row-name { font-weight: 600; font-size: 0.92rem; }
+  .kpi-row-cat { font-size: 0.7rem; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-top: 2px; }
+  .kpi-impact {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .impact-high { background: rgba(76,175,80,0.15); color: #81c784; }
+  .impact-med { background: rgba(255,179,0,0.12); color: #ffd54f; }
+  .kpi-expand-icon { color: var(--muted); font-size: 12px; margin-left: 8px; transition: transform 0.2s; }
+  .kpi-row.open .kpi-expand-icon { transform: rotate(180deg); }
+  .kpi-detail {
+    display: none;
+    padding: 0 20px 18px;
+    border-top: 1px solid var(--border);
+  }
+  .kpi-row.open .kpi-detail { display: block; }
+  .kpi-detail-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .kd-box { background: var(--surface2); border-radius: 8px; padding: 14px; }
+  .kd-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+  .kd-val { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
+  .kd-val.mono { font-family: 'DM Mono', monospace; color: var(--accent); font-size: 0.8rem; }
+
+  /* ROI SUMMARY */
+  .roi-box {
+    background: linear-gradient(135deg, rgba(255,179,0,0.08) 0%, rgba(255,179,0,0.03) 100%);
+    border: 1px solid rgba(255,179,0,0.25);
+    border-radius: 12px;
+    padding: 26px;
+    margin-bottom: 40px;
+  }
+  .roi-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--gold); margin-bottom: 14px; }
+  .roi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .roi-item { text-align: center; }
+  .roi-val { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--gold); }
+  .roi-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+  /* CTA */
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; padding: 40px 0 60px; border-top: 1px solid var(--border); margin-top: 20px; }
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.9rem;
+    padding: 13px 26px; border-radius: 6px; text-decoration: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .cta-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .cta-primary { background: var(--accent); color: white; }
+  .cta-secondary { background: var(--surface); border: 1.5px solid var(--border); color: var(--text); }
+  .cta-gold { background: var(--gold); color: #1a1000; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    .kpi-detail-grid { grid-template-columns: 1fr; }
+    .roi-grid { grid-template-columns: 1fr; }
+    .stats { flex-direction: column; align-items: center; }
+    .stat-box { width: 100%; max-width: 240px; border-radius: 8px !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a href="https://simplitconsulting.com/" class="topbar-logo">Simplit<span>Consulting</span></a>
+      <a href="https://simplitconsulting.com/" class="topbar-back">← Back to Blog</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Interactive Tool · Oracle Fusion Consignment</div>
+    <h1>Consignment KPI Explorer</h1>
+    <p class="hero-sub">Select your industry to instantly discover which consignment KPIs matter most, what they measure, and the quantifiable business impact Oracle Fusion delivers.</p>
+
+    <div class="stats">
+      <div class="stat-box"><div class="stat-val">8</div><div class="stat-label">KPIs Tracked</div></div>
+      <div class="stat-box"><div class="stat-val">7</div><div class="stat-label">Industries</div></div>
+      <div class="stat-box"><div class="stat-val">100%</div><div class="stat-label">Standard (No Custom)</div></div>
+      <div class="stat-box"><div class="stat-val">R12→</div><div class="stat-label">Fusion Uplift</div></div>
+    </div>
+  </div>
+
+  <!-- INDUSTRY SELECTOR -->
+  <div class="selector-section">
+    <div class="selector-label">Choose your industry</div>
+    <div class="industry-grid" id="industryGrid"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <div class="results-icon" id="resultIcon"></div>
+      <div>
+        <div class="results-industry" id="resultTitle"></div>
+        <div class="results-tagline" id="resultTagline"></div>
+      </div>
+    </div>
+
+    <div class="business-need">
+      <div class="bn-icon">💡</div>
+      <div>
+        <div class="bn-title">Business Need</div>
+        <div class="bn-text" id="businessNeed"></div>
+      </div>
+    </div>
+
+    <div class="kpi-table-wrap">
+      <div class="kpi-table-title">Applicable KPIs &amp; Quantifiable Impact</div>
+      <div id="kpiList"></div>
+    </div>
+
+    <div class="roi-box" id="roiBox">
+      <div class="roi-title">📊 Estimated Value Impact (Oracle Fusion vs. R12)</div>
+      <div class="roi-grid" id="roiGrid"></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-row">
+    <a href="https://simplitconsulting.com/contact-us" class="cta-btn cta-gold">Get in Touch →</a>
+    <a href="https://simplitconsulting.com/" class="cta-btn cta-secondary">Read Full Article</a>
+    <a href="https://www.linkedin.com/in/zaynah-budulla-bauccha-374b6128/" target="_blank" class="cta-btn cta-secondary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      Zaynah on LinkedIn
+    </a>
+  </div>
+</div>
+
+<script>
+const ALL_KPIS = {
+  turnover: {
+    name: "Consignment Inventory Turnover Rate",
+    cat: "Inventory", catKey: "inv",
+    desc: "How many times consigned stock cycles through consumption in a given period.",
+    formula: "Cost of Goods Consumed ÷ Average Consignment Inventory Value",
+    benchmark: "Varies by industry; higher = leaner, more efficient supply",
+    impact: "high",
+    r12Gap: "Not measurable without custom extraction; often estimated quarterly",
+    fusionGain: "Real-time via OTBI — enables dynamic reorder triggers"
+  },
+  utilization: {
+    name: "Consignment Utilization Rate",
+    cat: "Inventory", catKey: "inv",
+    desc: "% of consigned goods actually consumed vs. total received.",
+    formula: "(Qty Consumed ÷ Qty Received) × 100",
+    benchmark: "Target >85% in most industries to avoid excess return logistics",
+    impact: "high",
+    r12Gap: "Required manual receipt vs. consumption reconciliation in spreadsheets",
+    fusionGain: "Auto-calculated from consumption advice vs. receipt transactions"
+  },
+  dco: {
+    name: "Days Consignment Outstanding (DCO)",
+    cat: "Inventory", catKey: "inv",
+    desc: "Average number of days goods remain in consignment sub-inventory before consumed or returned.",
+    formula: "(Average Consignment Balance ÷ Daily Consumption Cost)",
+    benchmark: "Lower DCO = faster throughput; high DCO signals over-stocking",
+    impact: "med",
+    r12Gap: "No standard sub-inventory aging report for consignment-only stock",
+    fusionGain: "Sub-inventory aging reports available with consignment-specific filters"
+  },
+  liability: {
+    name: "Consignment Liability Accuracy",
+    cat: "Financial", catKey: "fin",
+    desc: "How accurately the consignment liability account reflects actual supplier obligations.",
+    formula: "Consignment Liability Balance ÷ Confirmed Pending Invoices × 100",
+    benchmark: "Target 100% — any variance = reconciliation risk at period close",
+    impact: "high",
+    r12Gap: "Manual journals and reconciliation required; frequent close-period issues",
+    fusionGain: "SLA auto-posts liability at receipt; clears at consumption — always current"
+  },
+  cycletime: {
+    name: "Invoice Cycle Time (Consumption → Invoice)",
+    cat: "Financial", catKey: "fin",
+    desc: "Days elapsed between a consumption event and an approved AP invoice.",
+    formula: "Invoice Approval Date − Consumption Date",
+    benchmark: "Oracle Fusion target: same-day to 3 days; R12 workaround average: 7–15 days",
+    impact: "high",
+    r12Gap: "Manual handoff from inventory to AP; no system link between consumption and billing",
+    fusionGain: "Consumption advice auto-creates AP invoice; approval workflow auto-triggered"
+  },
+  returnrate: {
+    name: "Return Rate on Consignment Orders",
+    cat: "Financial", catKey: "fin",
+    desc: "% of consigned goods returned to supplier vs. total received.",
+    formula: "(Qty Returned ÷ Qty Received) × 100",
+    benchmark: "Industry-specific; high return rate signals over-consignment or demand issues",
+    impact: "med",
+    r12Gap: "Returns managed manually; no system linkage to original PO or agreement",
+    fusionGain: "Return flow tracked natively with linked consumption advice credit"
+  },
+  compliance: {
+    name: "Agreement Compliance Rate",
+    cat: "Operational", catKey: "ops",
+    desc: "% of consignment purchase orders raised against active agreements vs. off-contract.",
+    formula: "(On-Agreement PO Value ÷ Total Consignment PO Value) × 100",
+    benchmark: "Target >95%; off-contract spend indicates control breakdown",
+    impact: "high",
+    r12Gap: "No formal consignment agreement object — impossible to measure natively",
+    fusionGain: "Consignment agreement is a standard doc type; compliance reports available"
+  },
+  matchrate: {
+    name: "Auto-Invoice Match Rate",
+    cat: "Operational", catKey: "ops",
+    desc: "% of consumption advice documents auto-matched to supplier invoices without manual intervention.",
+    formula: "(Auto-Matched Invoices ÷ Total Consignment Invoices) × 100",
+    benchmark: "Target >90%; low rates signal setup or master data issues",
+    impact: "high",
+    r12Gap: "No auto-match — every consignment invoice required manual AP processing",
+    fusionGain: "2-way match on consumption advice; touchless processing at high match rates"
+  }
+};
+
+const INDUSTRIES = [
+  {
+    id: "mfg", icon: "🏭", name: "Manufacturing", sub: "Discrete & Process",
+    tagline: "Managing supplier-owned raw materials and components on the shop floor",
+    need: "Manufacturers running just-in-time production models need consigned raw materials available on demand without tying up capital. In R12, tracking which components were still supplier-owned vs. consumed was a manual, error-prone process — often discovered only at month-end when cost variances emerged. Oracle Fusion makes this real-time, automated, and auditable.",
+    kpis: ["turnover","utilization","liability","cycletime","compliance","matchrate"],
+    roi: [
+      { val: "–40%", label: "Reduction in month-end reconciliation time" },
+      { val: "3×", label: "Faster invoice cycle vs. R12 average" },
+      { val: ">95%", label: "Agreement compliance achievable" }
+    ]
+  },
+  {
+    id: "health", icon: "🏥", name: "Healthcare", sub: "Medical Devices & Supplies",
+    tagline: "Consigned surgical supplies and devices at hospitals and clinics",
+    need: "Medical device companies commonly place implants and surgical kits on consignment at hospitals — payment only triggered when used in a procedure. The compliance and traceability requirements in healthcare make manual tracking extremely risky. Fusion's consumption advice creates an automated, auditable link from procedure to invoice — critical for both regulatory compliance and supplier relationship management.",
+    kpis: ["utilization","dco","liability","cycletime","returnrate","matchrate"],
+    roi: [
+      { val: "100%", label: "Traceability from implant use to invoice" },
+      { val: "–60%", label: "Reduction in AP exception handling" },
+      { val: "Same-day", label: "Consumption-to-invoice triggering" }
+    ]
+  },
+  {
+    id: "retail", icon: "🛍", name: "Retail & Distribution", sub: "FMCG & Consumer Goods",
+    tagline: "Supplier-owned stock on shelves, settled only after sale",
+    need: "Retailers carrying consigned goods from suppliers need clear visibility into what has been sold (consumed) vs. what remains supplier-owned — especially for high-volume, fast-moving SKUs. Without this, consignment liabilities are systematically misstated. Oracle Fusion's utilization tracking and consumption-based invoicing align financial records with physical reality, period by period.",
+    kpis: ["turnover","utilization","dco","liability","returnrate","compliance"],
+    roi: [
+      { val: "–25%", label: "Reduction in overstock returns" },
+      { val: "Real-time", label: "Consignment liability visibility" },
+      { val: "+15%", label: "Supplier negotiation leverage via data" }
+    ]
+  },
+  {
+    id: "auto", icon: "🚗", name: "Automotive", sub: "OEM & Tier-1 Suppliers",
+    tagline: "Vendor-managed inventory (VMI) at assembly lines",
+    need: "Automotive OEMs commonly operate vendor-managed consignment programmes where Tier-1 suppliers own stock on the production line until it's pulled into a vehicle build. Volume is enormous, and the difference between owned and consigned inventory can run into tens of millions at any given moment. Fusion's agreement compliance and auto-match rates determine whether this is a controlled, low-cost process or a financial control risk.",
+    kpis: ["turnover","dco","liability","cycletime","compliance","matchrate"],
+    roi: [
+      { val: "€M+", label: "Balance sheet accuracy improvement" },
+      { val: "–70%", label: "AP manual processing effort" },
+      { val: ">98%", label: "Target auto-match rate at scale" }
+    ]
+  },
+  {
+    id: "pharma", icon: "💊", name: "Pharma & Life Sciences", sub: "Regulated Supply Chains",
+    tagline: "Consigned Active Pharmaceutical Ingredients (APIs) and packaging",
+    need: "Pharmaceutical manufacturers receive consigned APIs and excipients from suppliers under strict GMP conditions. Ownership transfer at consumption must be precisely documented for regulatory batch records and financial audits. In R12, this created a dual-record burden — one for quality/batch systems and one for finance. Oracle Fusion's SLA-backed accounting entries and consumption advice documents serve both masters simultaneously.",
+    kpis: ["utilization","liability","cycletime","returnrate","compliance","matchrate"],
+    roi: [
+      { val: "Audit-ready", label: "Consumption-to-invoice trail at all times" },
+      { val: "–50%", label: "Period-end close effort for consignment items" },
+      { val: "0", label: "Manual journal entries required" }
+    ]
+  },
+  {
+    id: "energy", icon: "⚡", name: "Energy & Utilities", sub: "Oil, Gas & Power",
+    tagline: "Consigned MRO parts and capital spares at remote sites",
+    need: "Energy companies maintain vast consigned MRO (maintenance, repair and operations) inventories at remote facilities — spare parts that suppliers own but make available for immediate use. The challenge is knowing what has been consumed across dozens of sites without a reliable system. Oracle Fusion's consignment sub-inventory structure and consumption tracking gives central finance and procurement real visibility across the entire estate.",
+    kpis: ["turnover","dco","liability","compliance","returnrate","matchrate"],
+    roi: [
+      { val: "Multi-site", label: "Unified consignment visibility" },
+      { val: "–35%", label: "Reduction in working capital tied up" },
+      { val: "3 days", label: "Average DCO improvement target" }
+    ]
+  },
+  {
+    id: "tech", icon: "💻", name: "Technology & Electronics", sub: "Contract Manufacturing",
+    tagline: "Customer-owned components consigned to contract manufacturers (CM)",
+    need: "Tech companies consigning components to CMs for assembly need to know exactly what stock is at each CM site, what has been consumed in builds, and what the CM owes back. This is a high-value, high-velocity scenario where agreement compliance and utilization data determine whether the programme is profitable. Fusion's KPI suite provides the real-time dashboard that R12 could never deliver natively.",
+    kpis: ["utilization","dco","cycletime","compliance","matchrate","returnrate"],
+    roi: [
+      { val: "Real-time", label: "Component consumption vs. build plan" },
+      { val: ">90%", label: "Target auto-invoice match rate" },
+      { val: "–45%", label: "Reduction in CM reconciliation disputes" }
+    ]
+  }
+];
+
+const catClass = { inv: 'cat-inv', fin: 'cat-fin', ops: 'cat-ops' };
+
+function renderIndustries() {
+  const grid = document.getElementById('industryGrid');
+  INDUSTRIES.forEach(ind => {
+    const btn = document.createElement('button');
+    btn.className = 'ind-btn';
+    btn.dataset.id = ind.id;
+    btn.innerHTML = `<span class="ind-icon">${ind.icon}</span><div class="ind-name">${ind.name}</div><div class="ind-sub">${ind.sub}</div>`;
+    btn.addEventListener('click', () => selectIndustry(ind.id));
+    grid.appendChild(btn);
+  });
+}
+
+function selectIndustry(id) {
+  document.querySelectorAll('.ind-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+  const ind = INDUSTRIES.find(i => i.id === id);
+  if (!ind) return;
+
+  document.getElementById('resultIcon').textContent = ind.icon;
+  document.getElementById('resultTitle').textContent = ind.name;
+  document.getElementById('resultTagline').textContent = ind.tagline;
+  document.getElementById('businessNeed').textContent = ind.need;
+
+  const list = document.getElementById('kpiList');
+  list.innerHTML = '';
+  ind.kpis.forEach(key => {
+    const kpi = ALL_KPIS[key];
+    const row = document.createElement('div');
+    row.className = 'kpi-row';
+    row.innerHTML = `
+      <div class="kpi-row-header" onclick="toggleRow(this.parentElement)">
+        <div class="kpi-name-wrap">
+          <div class="kpi-cat-dot ${catClass[kpi.catKey]}"></div>
+          <div>
+            <div class="kpi-row-name">${kpi.name}</div>
+            <div class="kpi-row-cat">${kpi.cat}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="kpi-impact impact-${kpi.impact}">${kpi.impact === 'high' ? '🔺 High Impact' : '🔶 Medium Impact'}</span>
+          <span class="kpi-expand-icon">▼</span>
+        </div>
+      </div>
+      <div class="kpi-detail">
+        <div style="color:#a8c8e8;font-size:0.88rem;margin-top:2px;">${kpi.desc}</div>
+        <div class="kpi-detail-grid">
+          <div class="kd-box">
+            <div class="kd-label">Formula</div>
+            <div class="kd-val mono">${kpi.formula}</div>
+          </div>
+          <div class="kd-box">
+            <div class="kd-label">Benchmark / Target</div>
+            <div class="kd-val">${kpi.benchmark}</div>
+          </div>
+          <div class="kd-box">
+            <div class="kd-label">R12 Gap → Fusion Gain</div>
+            <div class="kd-val"><span style="color:#ef9a9a;">R12: </span>${kpi.r12Gap}<br><br><span style="color:#a5d6a7;">Fusion: </span>${kpi.fusionGain}</div>
+          </div>
+        </div>
+      </div>`;
+    list.appendChild(row);
+  });
+
+  const roiGrid = document.getElementById('roiGrid');
+  roiGrid.innerHTML = '';
+  ind.roi.forEach(r => {
+    roiGrid.innerHTML += `<div class="roi-item"><div class="roi-val">${r.val}</div><div class="roi-label">${r.label}</div></div>`;
+  });
+
+  const res = document.getElementById('resultsSection');
+  res.classList.remove('visible');
+  void res.offsetWidth;
+  res.classList.add('visible');
+  res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toggleRow(row) {
+  row.classList.toggle('open');
+}
+
+renderIndustries();
+</script>
+</body>
+</html>
