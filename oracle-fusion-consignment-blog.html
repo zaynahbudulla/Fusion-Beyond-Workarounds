@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consignment in Oracle Fusion | From Workaround to World-Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1b2a;
+    --mid: #2c4a6e;
+    --accent: #1565c0;
+    --gold: #c8972b;
+    --pale: #eaf2fb;
+    --warm: #fdf6ec;
+    --light: #f5f8fc;
+    --border: #d0dce9;
+    --white: #ffffff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--ink); line-height: 1.7; overflow-x: hidden; }
+
+  /* NAV */
+  .topnav {
+    background: var(--ink);
+    padding: 13px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .topnav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+  }
+  .topnav-logo span { color: var(--gold); }
+  .topnav-links { display: flex; gap: 28px; align-items: center; }
+  .topnav-links a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .topnav-links a:hover { color: white; }
+  .topnav-cta {
+    background: var(--gold) !important;
+    color: var(--ink) !important;
+    padding: 7px 18px;
+    border-radius: 4px;
+    font-weight: 700 !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    background: var(--ink);
+    color: white;
+    padding: 90px 40px 70px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 80% 20%, rgba(21,101,192,0.45) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 10% 90%, rgba(200,151,43,0.2) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-inner { position: relative; max-width: 860px; margin: 0 auto; }
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .hero h1 em { font-style: italic; color: #80b5f0; }
+  .hero-sub {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.75);
+    max-width: 620px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+  .hero-meta-item { display: flex; align-items: center; gap: 8px; }
+  .hero-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+
+  /* AUTHOR */
+  .author-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+    max-width: 360px;
+  }
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #1565c0, #0d3b78);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .author-name { font-weight: 700; font-size: 0.9rem; color: white; }
+  .author-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+  .author-linkedin {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: #80b5f0;
+    text-decoration: none;
+    margin-top: 3px;
+  }
+  .author-linkedin:hover { color: white; }
+
+  /* AUDIENCE BAR */
+  .audience-bar { background: var(--pale); border-bottom: 1px solid var(--border); padding: 16px 40px; }
+  .audience-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .audience-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--mid); white-space: nowrap; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  /* TOOL BANNER */
+  .tool-banner {
+    background: linear-gradient(90deg, #0d3b78 0%, #1565c0 60%, #1976d2 100%);
+    padding: 22px 40px;
+    border-bottom: 3px solid var(--gold);
+  }
+  .tool-banner-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .tool-banner-text { color: white; }
+  .tool-banner-text strong { font-size: 1rem; display: block; margin-bottom: 4px; }
+  .tool-banner-text span { font-size: 0.83rem; color: rgba(255,255,255,0.7); }
+  .tool-banner-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gold);
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 11px 22px;
+    border-radius: 5px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .tool-banner-btn:hover { opacity: 0.88; }
+
+  /* SECTIONS */
+  section { padding: 60px 40px; border-bottom: 1px solid var(--border); max-width: 860px; margin: 0 auto; }
+  section:last-of-type { border-bottom: none; }
+  .section-number { font-size: 0.72rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  h2 { font-family: 'Playfair Display', serif; font-size: 1.85rem; font-weight: 700; color: var(--ink); margin-bottom: 18px; line-height: 1.25; }
+  h3 { font-size: 0.85rem; font-weight: 600; color: var(--mid); margin: 26px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
+  p { color: #2d3e50; margin-bottom: 16px; font-size: 0.97rem; }
+  p:last-child { margin-bottom: 0; }
+
+  .callout { background: var(--pale); border-left: 4px solid var(--accent); padding: 18px 22px; border-radius: 0 8px 8px 0; margin: 26px 0; }
+  .callout p { margin: 0; font-size: 0.93rem; }
+
+  /* COMPARE */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 30px 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(13,27,42,0.07); }
+  .compare-col { padding: 26px; }
+  .compare-col.old { background: #fff8f0; }
+  .compare-col.new { background: #f0f6ff; }
+  .compare-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .compare-badge { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 3px; }
+  .badge-old { background: #f5dfc0; color: #7a4c10; }
+  .badge-new { background: #c3daf7; color: #0d3b78; }
+  .compare-title { font-weight: 700; font-size: 1rem; }
+  .compare-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 11px; font-size: 0.87rem; line-height: 1.5; color: #2d3e50; }
+  .compare-item .icon { flex-shrink: 0; font-size: 14px; margin-top: 2px; }
+
+  /* FLOW */
+  .flow { display: flex; align-items: stretch; margin: 34px 0; overflow-x: auto; }
+  .flow-step { flex: 1; min-width: 108px; background: white; border: 1.5px solid var(--border); border-right: none; padding: 18px 12px; text-align: center; position: relative; }
+  .flow-step:last-child { border-right: 1.5px solid var(--border); border-radius: 0 8px 8px 0; }
+  .flow-step:first-child { border-radius: 8px 0 0 8px; }
+  .flow-step::after { content: '›'; position: absolute; right: -13px; top: 50%; transform: translateY(-50%); font-size: 22px; color: var(--accent); z-index: 2; font-weight: 700; }
+  .flow-step:last-child::after { display: none; }
+  .flow-step.highlighted { background: var(--accent); border-color: var(--accent); color: white; }
+  .flow-step.highlighted .step-label, .flow-step.highlighted .step-title { color: white; }
+  .step-icon { font-size: 20px; margin-bottom: 7px; }
+  .step-title { font-weight: 600; font-size: 0.78rem; line-height: 1.3; color: var(--ink); }
+  .step-label { font-size: 0.68rem; color: #7a8fa6; margin-top: 4px; }
+
+  /* ACCOUNTING */
+  .accounting-diagram { background: var(--ink); border-radius: 12px; padding: 34px 30px; margin: 30px 0; color: white; }
+  .acct-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 26px; }
+  .acct-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 8px; align-items: center; }
+  .acct-box { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 14px; text-align: center; }
+  .acct-box.active { background: rgba(21,101,192,0.4); border-color: rgba(128,181,240,0.5); }
+  .acct-box-label { font-size: 0.68rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .acct-box-value { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; }
+  .acct-arrow { font-size: 22px; color: var(--gold); text-align: center; }
+  .acct-note { font-size: 0.76rem; color: rgba(255,255,255,0.4); margin-top: 18px; text-align: center; }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 30px 0; }
+  .kpi-card { background: white; border: 1.5px solid var(--border); border-radius: 10px; padding: 20px 16px; position: relative; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+  .kpi-card:hover { box-shadow: 0 8px 28px rgba(13,27,42,0.1); transform: translateY(-2px); }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); }
+  .kpi-card.gold::before { background: var(--gold); }
+  .kpi-card.teal::before { background: #0097a7; }
+  .kpi-category { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #8a9baf; margin-bottom: 7px; }
+  .kpi-name { font-weight: 700; font-size: 0.9rem; color: var(--ink); margin-bottom: 5px; line-height: 1.3; }
+  .kpi-desc { font-size: 0.79rem; color: #5a6f82; line-height: 1.4; }
+
+  /* AUDIENCE CARDS */
+  .audience-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 30px 0; }
+  .audience-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 22px; background: white; display: flex; gap: 14px; align-items: flex-start; }
+  .audience-avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .av-blue { background: #dbeafe; }
+  .av-gold { background: #fef3c7; }
+  .av-teal { background: #ccfbf1; }
+  .av-purple { background: #ede9fe; }
+  .audience-card h4 { font-size: 0.9rem; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+  .audience-card p { font-size: 0.81rem; color: #4a5f73; margin: 0; line-height: 1.5; }
+
+  /* RETURN FLOW */
+  .return-flow { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0; align-items: center; }
+  .rf-box { background: white; border: 1.5px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 0.84rem; font-weight: 600; color: var(--ink); text-align: center; flex: 1; min-width: 120px; }
+  .rf-box.highlight { background: #e8f4fd; border-color: #90c4f0; color: var(--accent); }
+  .rf-arrow { color: var(--gold); font-size: 18px; font-weight: bold; }
+
+  /* CONCLUSION */
+  .conclusion { background: linear-gradient(135deg, var(--ink) 0%, #1a3a5c 100%); color: white; padding: 64px 40px; max-width: 100%; }
+  .conclusion-inner { max-width: 860px; margin: 0 auto; }
+  .conclusion h2 { color: white; font-family: 'Playfair Display', serif; margin-bottom: 18px; }
+  .conclusion p { color: rgba(255,255,255,0.8); }
+  .conclusion-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 30px; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--gold); color: var(--ink); font-weight: 700; font-size: 0.88rem; padding: 12px 24px; border-radius: 4px; text-decoration: none; transition: opacity 0.2s; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: white; font-weight: 600; font-size: 0.88rem; padding: 12px 24px; border-radius: 4px; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.3); transition: border-color 0.2s; }
+  .btn-secondary:hover { border-color: white; }
+
+  /* FOOTER */
+  .footer { background: #07111c; padding: 32px 40px; text-align: center; }
+  .footer-inner { max-width: 860px; margin: 0 auto; }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: white; text-decoration: none; }
+  .footer-logo span { color: var(--gold); }
+  .footer-links { display: flex; justify-content: center; gap: 24px; margin: 16px 0; flex-wrap: wrap; }
+  .footer-links a { color: rgba(255,255,255,0.45); font-size: 0.82rem; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: white; }
+  .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.25); margin-top: 12px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 640px) {
+    .topnav { padding: 12px 20px; }
+    .hero, section { padding: 44px 20px; }
+    .audience-bar, .tool-banner { padding: 14px 20px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .audience-grid { grid-template-columns: 1fr; }
+    .acct-flow { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .topnav-links .topnav-cta { display: inline-flex; }
+    .topnav-links a:not(.topnav-cta) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <a href="https://simplitconsulting.com/" class="topnav-logo">Simplit<span>Consulting</span></a>
+  <div class="topnav-links">
+    <a href="https://simplitconsulting.com/">Blog</a>
+    <a href="https://simplitconsulting.com/contact-us" class="topnav-cta">Get in Touch</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">Oracle Fusion Cloud · Procurement & Inventory</div>
+    <h1>Consignment Agreements & Orders:<br><em>From Workaround to World-Class</em></h1>
+    <p class="hero-sub">How Oracle Fusion closes the gaps left open by R12 and delivers a fully integrated consignment lifecycle — from agreement to invoice to return.</p>
+    <div class="hero-meta">
+      <div class="author-block">
+        <div class="author-avatar">👤</div>
+        <div>
+          <div class="author-name">Zaynah Budulla</div>
+          <div class="author-role">Oracle Fusion Specialist · Simplit Consulting</div>
+          <a class="author-linkedin" href="https://www.linkedin.com/in/zaynah-budulla-bauccha-374b6128/" target="_blank" rel="noopener">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; color:rgba(255,255,255,0.5); font-size:0.82rem;">
+        <span>📅 March 2026</span>
+        <span>⏱ 7 min read</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIENCE BAR -->
+<div class="audience-bar">
+  <div class="audience-inner">
+    <span class="audience-label">Who this is for:</span>
+    <span class="pill">📦 Procurement Managers</span>
+    <span class="pill">💼 Finance &amp; AP Teams</span>
+    <span class="pill">🏭 Warehouse &amp; Inventory Teams</span>
+    <span class="pill">🛠 Oracle ERP Consultants</span>
+    <span class="pill">📊 Supply Chain Leaders</span>
+  </div>
+</div>
+
+<!-- INTERACTIVE TOOL BANNER -->
+<div class="tool-banner">
+  <div class="tool-banner-inner">
+    <div class="tool-banner-text">
+      <strong>🎯 Interactive Tool: Consignment KPI Explorer</strong>
+      <span>Select your industry and instantly see which KPIs apply, what they measure, and the business case behind each one.</span>
+    </div>
+    <a href="https://simplitconsulting.github.io/consignment-kpi-explorer/" target="_blank" class="tool-banner-btn">
+      Try the Tool →
+    </a>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<section class="fade-in">
+  <div class="section-number">Section 01</div>
+  <h2>The Gap Oracle R12 Left Behind</h2>
+  <p>Consignment inventory — where a supplier delivers goods but retains ownership until consumption — offers real cash flow and supply chain advantages. Yet Oracle R12 never gave it the native treatment it deserved. The result was a patchwork of manual processes, custom development, and uncomfortable workarounds.</p>
+  <div class="compare-grid">
+    <div class="compare-col old">
+      <div class="compare-header">
+        <span class="compare-badge badge-old">Oracle R12</span>
+        <span class="compare-title">The old reality</span>
+      </div>
+      <div class="compare-item"><span class="icon">❌</span> No native consignment agreement structure — simulated via blanket POs</div>
+      <div class="compare-item"><span class="icon">❌</span> Consumption tracked manually in spreadsheets or external tools</div>
+      <div class="compare-item"><span class="icon">❌</span> No distinction between owned and consigned stock in inventory</div>
+      <div class="compare-item"><span class="icon">❌</span> Invoicing handled outside standard AP — prone to errors and delays</div>
+      <div class="compare-item"><span class="icon">❌</span> Returns managed ad hoc with no standard flow or traceability</div>
+      <div class="compare-item"><span class="icon">❌</span> Manual journal entries required for correct accounting treatment</div>
+    </div>
+    <div class="compare-col new">
+      <div class="compare-header">
+        <span class="compare-badge badge-new">Oracle Fusion</span>
+        <span class="compare-title">The new standard</span>
+      </div>
+      <div class="compare-item"><span class="icon">✅</span> Formal Consignment Agreements as a dedicated document type</div>
+      <div class="compare-item"><span class="icon">✅</span> Consumption tracked automatically with system-generated advice</div>
+      <div class="compare-item"><span class="icon">✅</span> Consignment sub-inventory clearly tagged as supplier-owned</div>
+      <div class="compare-item"><span class="icon">✅</span> AP invoices auto-generated from consumption events</div>
+      <div class="compare-item"><span class="icon">✅</span> Full native return flow with linkage back to originating order</div>
+      <div class="compare-item"><span class="icon">✅</span> Subledger Accounting (SLA) handles all entries automatically</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2 -->
+<section class="fade-in">
+  <div class="section-number">Section 02</div>
+  <h2>End-to-End in Standard — All the Way to Invoicing</h2>
+  <p>Oracle Fusion doesn't just patch the gaps — it rebuilds the entire consignment lifecycle as a connected, standard process. Every step from agreement creation to supplier payment is handled within a single integrated system.</p>
+  <div class="flow">
+    <div class="flow-step"><div class="step-icon">📝</div><div class="step-title">Consignment Agreement</div><div class="step-label">Terms, items, pricing</div></div>
+    <div class="flow-step"><div class="step-icon">🛒</div><div class="step-title">Consignment PO</div><div class="step-label">Raised against agreement</div></div>
+    <div class="flow-step"><div class="step-icon">📦</div><div class="step-title">Receipt</div><div class="step-label">Into consignment sub-inv.</div></div>
+    <div class="flow-step highlighted"><div class="step-icon">⚡</div><div class="step-title">Consumption</div><div class="step-label">Ownership transfers</div></div>
+    <div class="flow-step"><div class="step-icon">📋</div><div class="step-title">Consumption Advice</div><div class="step-label">System-generated</div></div>
+    <div class="flow-step"><div class="step-icon">💳</div><div class="step-title">AP Invoice</div><div class="step-label">Auto-created, matched</div></div>
+  </div>
+  <div class="callout">
+    <p><strong>Key insight:</strong> The Consumption Advice document is the game-changer. It auto-triggers invoicing at the moment of consumption — not receipt — ensuring you only pay for what you actually use, with full audit traceability at every step.</p>
+  </div>
+</section>
+
+<!-- SECTION 3 -->
+<section class="fade-in">
+  <div class="section-number">Section 03</div>
+  <h2>Returns: Finally a First-Class Citizen</h2>
+  <p>In R12, returning unconsumed consignment goods was an operational headache with no standard solution. Oracle Fusion treats returns as an integral part of the consignment flow, not an afterthought.</p>
+  <div class="return-flow">
+    <div class="rf-box highlight">Consignment Sub-Inventory</div>
+    <span class="rf-arrow">→</span>
+    <div class="rf-box">Return Transaction Initiated</div>
+    <span class="rf-arrow">→</span>
+    <div class="rf-box highlight">Linked to Original Order</div>
+    <span class="rf-arrow">→</span>
+    <div class="rf-box">Return Consumption Advice</div>
+    <span class="rf-arrow">→</span>
+    <div class="rf-box">Supplier Credit / No Invoice</div>
+  </div>
+  <p>The system ensures that only goods confirmed as consumed are billed. Unconsumed returns are tracked back to the supplier with full documentation — no disputes, no manual corrections, no data integrity issues.</p>
+</section>
+
+<!-- SECTION 4 -->
+<section class="fade-in">
+  <div class="section-number">Section 04</div>
+  <h2>Accounting Done Right — Automatically</h2>
+  <p>Consignment goods are not owned by the buyer until consumed, so they must not appear as assets. Oracle Fusion's Subledger Accounting (SLA) engine enforces this automatically at every stage.</p>
+  <div class="accounting-diagram">
+    <div class="acct-title">Accounting entry flow</div>
+    <div class="acct-flow">
+      <div class="acct-box"><div class="acct-box-label">On Receipt</div><div class="acct-box-value">Consignment Liability ↑</div></div>
+      <div class="acct-arrow">→</div>
+      <div class="acct-box active"><div class="acct-box-label">On Consumption</div><div class="acct-box-value">Inventory/Expense ↑<br>Consignment Liability ↓</div></div>
+      <div class="acct-arrow">→</div>
+      <div class="acct-box"><div class="acct-box-label">On Invoice</div><div class="acct-box-value">AP Liability created<br>from Consumption Advice</div></div>
+    </div>
+    <div class="acct-note">All entries generated through SLA — fully traceable, IFRS &amp; US GAAP aligned. Zero manual journals required.</div>
+  </div>
+</section>
+
+<!-- SECTION 5 -->
+<section class="fade-in">
+  <div class="section-number">Section 05</div>
+  <h2>A Process Every Stakeholder Can Follow</h2>
+  <p>Oracle Fusion's unified data model means every team works from the same source of truth — no spreadsheet chains, no offline approvals, no reconciliation across systems.</p>
+  <div class="audience-grid">
+    <div class="audience-card"><div class="audience-avatar av-blue">📋</div><div><h4>Procurement Officers</h4><p>Track agreement status, remaining quantities, pricing validity, and compliance rates within the Purchasing module.</p></div></div>
+    <div class="audience-card"><div class="audience-avatar av-teal">🏭</div><div><h4>Warehouse &amp; Inventory Teams</h4><p>Sub-inventory views clearly distinguish consigned vs. owned stock — no risk of inadvertent use or misclassification.</p></div></div>
+    <div class="audience-card"><div class="audience-avatar av-gold">💳</div><div><h4>Accounts Payable</h4><p>Monitor pending consumption advice and invoice creation from the standard AP workbench — no custom screens needed.</p></div></div>
+    <div class="audience-card"><div class="audience-avatar av-purple">📊</div><div><h4>Finance &amp; Compliance</h4><p>Real-time consignment liability balances, SLA-backed audit trails, and auto-matched invoices reduce close effort and audit risk.</p></div></div>
+  </div>
+</section>
+
+<!-- SECTION 6 -->
+<section class="fade-in">
+  <div class="section-number">Section 06</div>
+  <h2>KPIs That Were Previously Out of Reach</h2>
+  <p>By embedding consignment management into the core platform, Oracle Fusion unlocks measurable KPIs surfaceable via OTBI or Oracle Analytics Cloud. <a href="https://simplitconsulting.github.io/consignment-kpi-explorer/" target="_blank" style="color:var(--accent); font-weight:600;">Explore how these apply to your industry →</a></p>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-category">Inventory</div><div class="kpi-name">Consignment Inventory Turnover Rate</div><div class="kpi-desc">How quickly consigned goods are consumed — drives replenishment frequency and supplier negotiations.</div></div>
+    <div class="kpi-card"><div class="kpi-category">Inventory</div><div class="kpi-name">Consignment Utilization Rate</div><div class="kpi-desc">% consumed vs. received. Flags over-consignment or under-consumption patterns early.</div></div>
+    <div class="kpi-card"><div class="kpi-category">Inventory</div><div class="kpi-name">Days Consignment Outstanding</div><div class="kpi-desc">Average days goods sit in consignment — a proxy for working capital efficiency.</div></div>
+    <div class="kpi-card gold"><div class="kpi-category">Financial</div><div class="kpi-name">Consignment Liability Accuracy</div><div class="kpi-desc">Real-time balance sheet accuracy vs. supplier invoices. A critical audit and compliance metric.</div></div>
+    <div class="kpi-card gold"><div class="kpi-category">Financial</div><div class="kpi-name">Invoice Cycle Time</div><div class="kpi-desc">Time from consumption to approved AP invoice. Measures billing automation effectiveness.</div></div>
+    <div class="kpi-card gold"><div class="kpi-category">Financial</div><div class="kpi-name">Return Rate on Consignment</div><div class="kpi-desc">Volume and value of returned goods — flags forecasting or supplier quality issues.</div></div>
+    <div class="kpi-card teal"><div class="kpi-category">Operational</div><div class="kpi-name">Agreement Compliance Rate</div><div class="kpi-desc">% of consignment orders raised against active agreements vs. off-contract spend.</div></div>
+    <div class="kpi-card teal" style="grid-column:span 2;"><div class="kpi-category">Operational</div><div class="kpi-name">Auto-Invoice Match Rate</div><div class="kpi-desc">Proportion of consumption advice automatically matched to supplier invoices without manual intervention — signals a low-touch, high-efficiency process and reduces AP headcount requirements.</div></div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<div class="conclusion fade-in">
+  <div class="conclusion-inner">
+    <div class="section-number" style="color:rgba(200,151,43,0.8)">Conclusion</div>
+    <h2>The Business Case Has Never Been Stronger</h2>
+    <p>Oracle Fusion Cloud represents a generational leap in consignment management. What required custom development, manual spreadsheets, and fragile workarounds in R12 is now delivered as standard — fully integrated from agreement to invoicing, with correct accounting, native returns handling, and meaningful KPI enablement.</p>
+    <p style="margin-top:12px; color:rgba(255,255,255,0.65); font-size:0.9rem;">If your organization is still running consignment processes on R12 or through workarounds, it's time to see what the standard can do.</p>
+    <div class="conclusion-actions">
+      <a href="https://simplitconsulting.com/contact-us" class="btn-primary">Get in Touch →</a>
+      <a href="https://simplitconsulting.github.io/consignment-kpi-explorer/" target="_blank" class="btn-secondary">🎯 Explore KPI Tool</a>
+      <a href="https://simplitconsulting.com/" class="btn-secondary">← More Articles</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="https://simplitconsulting.com/" class="footer-logo">Simplit<span>Consulting</span></a>
+    <div class="footer-links">
+      <a href="https://simplitconsulting.com/">Blog</a>
+      <a href="https://simplitconsulting.com/contact-us">Contact</a>
+      <a href="https://www.linkedin.com/in/zaynah-budulla-bauccha-374b6128/" target="_blank">LinkedIn</a>
+      <a href="https://simplitconsulting.github.io/consignment-kpi-explorer/" target="_blank">KPI Tool</a>
+    </div>
+    <div class="footer-copy">© 2026 Simplit Consulting · Written by Zaynah Budulla</div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
